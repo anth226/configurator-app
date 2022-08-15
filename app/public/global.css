@@ -1,0 +1,63 @@
+/* @font-face {
+  font-family: "Circular-Light";
+  src: url("./fonts/CircularXXWeb-Light.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Circular-Bold";
+  src: url("./fonts/CircularXXWeb-Bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Circular-Light-Subset";
+  src: url("./fonts/CircularXXSub-LightSubset.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Circular-Bold-Subset";
+  src: url("./fonts/CircularXXSub-BoldSubset.woff2") format("woff2");
+}
+
+@font-face {
+	font-family: "Quarto-Medium";
+	src: url("./fonts/Quarto-Medium.woff2") format("woff2");
+}
+
+@font-face {
+	font-family: "Quarto-Light";
+	src: url("./fonts/Quarto-Light.woff2") format("woff2");
+} */
+
+/* SHOPIFY theme.css content */
+
+@charset "UTF-8";
+
+/*!
+  Impulse, by Archetype Themes
+  http://archetypethemes.co
+*/
+
+
+/* Simple modal CSS fix */
+.window-wrap {
+  width: 90%;
+  margin: 0 auto 0 !important;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+@media only screen and (max-width: 768px) {
+  .window-wrap {
+    max-width: 500px;
+  }
+}
+
+.window-wrap > .window {
+  width: 100% !important;
+}
+
+
+.sayduck-3d-viewer-137 {
+  z-index: 11 !important;
+}
+/*# sourceMappingURL=/s/files/1/0529/0488/6424/t/6/assets/theme.css.map?v=6832724620282320894 */

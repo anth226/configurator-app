@@ -1,0 +1,43 @@
+.content {
+    width: 100%;
+}
+
+.navigationMobile {
+    width: 4rem;
+    max-width: 4rem;
+}
+
+@media (max-width: 1280px) {
+    .navigation {
+        width: 5rem;
+        max-width: 5rem;
+        overflow: hidden;
+    }
+    .content {
+        max-width: calc(100% - 5rem);
+    }
+}
+
+.sectionList > li {
+    list-style-type: none;
+}
+
+.optionList > li {
+    list-style-type: none;
+}
+
+.optionList {
+    border-bottom: 1px solid #E1E3E5;
+}
+
+.optionListSayduck ul {
+    padding: 0 0 0.8rem 0;
+}
+.optionListSayduck li {
+    padding: 0;
+}
+
+.optionListSayduck p {
+    padding: 1.2rem 0 0 0.8rem;
+    border-top: 1px solid #E1E3E5;
+}

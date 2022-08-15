@@ -1,0 +1,231 @@
+service: configurator-server
+useDotenv: true
+package:
+  individually: true
+ 
+custom:
+  bundle:
+    packagerOptions:
+      scripts:
+        - rm -rf node_modules/sharp
+        - npm install --arch=x64 --platform=linux sharp
+  appName: woolman-configurator-app
+  imagesBucket: ${self:custom.appName}-images-${self:provider.stage}
+  dynamodb:
+    stages:
+      - ${self:provider.stage}
+    start:
+      port: 8001
+      migrate: true
+      convertEmptyValues: true
+  databaseTable: ${self:custom.appName}-${self:provider.stage}
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-bundle
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage,'dev'}
+  region: eu-central-1
+  profile: configurator
+  stackPolicy:
+    - Effect: Allow
+      Principal: '*'
+      Action: 'Update:*'
+      Resource: '*'
+  # Prevent CloudFormation from replacing or deleting DynamoDB tables
+    - Effect: Deny
+      Principal: '*'
+      Resource: '*'
+      Condition:
+        StringEquals:
+          ResourceType:
+            - AWS::DynamoDB::Table
+      Action:
+        - Update:Replace
+        - Update:Delete
+  lambdaHashingVersion: "20201221"
+  apiGateway:
+    shouldStartNameWithService: true
+  environment:
+    APP_TABLE: ${self:custom.appName}-${self:provider.stage}
+    SHOPIFY_API_SECRET: ${env:SHOPIFY_API_SECRET}
+    SHOPIFY_NONCE: ${env:SHOPIFY_NONCE}
+    SHOPIFY_API_KEY: ${env:SHOPIFY_API_KEY}
+    APP_ADMIN_URL: ${env:APP_ADMIN_URL}
+    APP_TOKEN_SECRET: ${env:APP_TOKEN_SECRET}
+    HUBSPOT_API_KEY: ${env:HUBSPOT_API_KEY}
+    HUBSPOT_FORMS_URL: ${env:HUBSPOT_FORMS_URL}
+    HUBSPOT_FORM_PORTAL_ID: ${env:HUBSPOT_FORM_PORTAL_ID}
+    HUBSPOT_FORM_GUID: ${env:HUBSPOT_FORM_GUID}
+    S3_BUCKET: ${self:custom.imagesBucket}
+    REGION: ${self:provider.region}
+    HOST: ${env:HOST}
+    PRODUCTS_WORKER: ${self:service}-${self:provider.stage}-productsWorker
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - arn:aws:dynamodb:eu-central-1:612073466000:table/woolman-configurator-app-dev
+
+functions:
+  auth:
+    handler: handlers/auth.handler
+    events:
+      - http:
+          path: auth
+          method: post
+          cors: true
+  install:
+      handler: handlers/auth.handler
+      events:
+        - http:
+            path: install
+            method: post
+            cors: true
+  products:
+    handler: handlers/products.handler
+    timeout: 120
+    events:
+      - http:
+          path: products
+          method: get
+          cors: true
+  productTypes:
+    handler: handlers/product-types.handler
+    timeout: 60
+    events:
+      - http:
+          path: products/types
+          method: get
+          cors: true
+  colleections:
+    handler: handlers/collections.handler
+    timeout: 120
+    events:
+      - http:
+          path: collections
+          method: get
+          cors: true
+  configurations:
+    handler: handlers/configurations.handler
+    timeout: 180
+    events:
+      - http:
+          path: configurations
+          method: any
+          cors: true
+      - http:
+          path: configurations/{meta}
+          method: any
+          cors: true
+  configurationCopy:
+    handler: handlers/configuration-copy.handler
+    timeout: 180
+    events:
+      - http:
+          path: configurations/{meta}/copy
+          method: any
+          cors: true
+  configurationSync:
+    handler: handlers/configuration-sync.handler
+    timeout: 180
+    events:
+      - http:
+          path: configurations/{meta}/sync
+          method: any
+          cors: true
+  configuration:
+    handler: handlers/configuration.handler
+    timeout: 120
+    events:
+      - http:
+          path: configuration/{meta}
+          method: any
+          cors: true
+  configurationSections:
+    handler: handlers/configuration-sections.handler
+    timeout: 120
+    events:
+      - http:
+          path: configurations/{meta}/sections
+          method: post
+          cors: true
+      - http:
+          path: configurations/{meta}/sections/{sectionId}
+          method: put
+          cors: true
+      - http:
+          path: configurations/{meta}/sections/{sectionId}
+          method: delete
+          cors: true
+  sectionOptions:
+    handler: handlers/section-options.handler
+    timeout: 120
+    events:
+      - http:
+          path: configurations/{meta}/sections/{sectionId}/options
+          method: post
+          cors: true
+      - http:
+          path: configurations/{meta}/sections/{sectionId}/options/{optionId}
+          method: put
+          cors: true
+      - http:
+          path: configurations/{meta}/sections/{sectionId}/options/{optionId}
+          method: delete
+          cors: true
+  upload:
+    handler: handlers/upload.handler
+    timeout: 120
+    events:
+      - http:
+          path: configurations/{meta}/images/upload
+          method: post
+          cors: true
+      - http:
+          path: configurations/{meta}/sections/images/upload
+          method: post
+          cors: true
+  images:
+    handler: handlers/images.handler
+    timeout: 120
+    events:
+      - http:
+          path: images/{image}
+          method: get
+          cors: true
+  configurationEmailSend:
+    handler: handlers/configuration-email-send.handler
+    timeout: 120
+    events:
+      - http:
+          path: configuration-email/send
+          method: post
+          cors: true
+  configurationEmailUpload:
+    handler: handlers/configuration-email-upload.handler
+    timeout: 120
+    events:
+      - http:
+          path: configuration-email/{meta}/upload
+          method: post
+          cors: true
+  productsWorker:
+    handler: handlers/products-worker.handler
+    timeout: 180
+    events:
+      - http:
+          path: workers/products
+          method: any

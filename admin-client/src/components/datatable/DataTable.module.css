@@ -1,0 +1,5 @@
+.noSelectionColumn table th:first-of-type *,
+.noSelectionColumn table td:first-of-type * {
+    display: none;
+    left: 0 !important;
+}

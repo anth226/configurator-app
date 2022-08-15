@@ -1,0 +1,33 @@
+Resources:
+  ImagesBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${self:custom.imagesBucket}'
+      AccessControl: Private
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ['*']
+            AllowedMethods: ['PUT']
+            AllowedOrigins: ['*']
+  ImagesBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: ImagesBucket
+      PolicyDocument:
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action:
+            - s3:GetObject
+            Resource: arn:aws:s3:::${self:custom.imagesBucket}/*
+          - Sid: PutSignedObject
+            Effect: Allow
+            Principal: "*"
+            Action:
+            - s3:PutObject
+            Resource: arn:aws:s3:::${self:custom.imagesBucket}/*
+Outputs:
+    ImagesBucket:
+        Value: !Ref ImagesBucket

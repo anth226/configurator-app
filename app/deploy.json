@@ -1,0 +1,7 @@
+{
+  "bucket": "woolman-configurator-ui",
+  "region": "eu-central-1",
+  "profile": "configurator",
+  "distribution": "woolman-configurator-ui",
+  "dist": "public/"
+}

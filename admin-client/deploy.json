@@ -1,0 +1,7 @@
+{
+  "bucket": "woolman-configurator-app",
+  "region": "eu-central-1",
+  "profile": "configurator",
+  "distribution": "woolman-configurator-app",
+  "dist": "build/"
+}
